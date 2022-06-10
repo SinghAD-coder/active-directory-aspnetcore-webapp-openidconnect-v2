@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -24,17 +25,21 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
         private readonly GraphServiceClient _graphServiceClient;
 
         private readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+        readonly ITokenAcquisition _tokenAcquisition;
 
         private string[] _graphScopes;
 
         public HomeController(ILogger<HomeController> logger,
                             IConfiguration configuration,
                             GraphServiceClient graphServiceClient,
-                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
+                            MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler,
+                            ITokenAcquisition tokenAcquistion)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
             this._consentHandler = consentHandler;
+
+            _tokenAcquisition = tokenAcquistion;
 
             // Capture the Scopes for Graph that were used in the original request for an Access token (AT) for MS Graph as
             // they'd be needed again when requesting a fresh AT for Graph during claims challenge processing
@@ -54,6 +59,14 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
             try
             {
+                var idToken = await HttpContext.GetTokenAsync("id_token");
+                var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+                string[] scopes = new string[] { "user.read" };
+                var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+
+                accessToken = await HttpContext.GetTokenAsync("access_token");
+
                 currentUser = await _graphServiceClient.Me.Request().GetAsync();
             }
             // Catch CAE exception from Graph SDK
