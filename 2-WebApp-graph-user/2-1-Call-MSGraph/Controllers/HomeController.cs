@@ -1,4 +1,22 @@
-﻿using Azure;
+﻿/*
+Interesting Notes: 
+
+ 1. In the Startup.cs, we're instucting the framework to use oidc + we're attempting to obtain an access token for the initial scopes
+ 2. These initial scopes are the ones that will be shown to the user their consent - this should always be bare minimum.
+ 3. Whenever you add a scope in the API Permissions blade, you'll NOT see a consent for those scopes unless until YOU ask for it in your action methods:
+    a. The scope you're interested in must be specified in the AuthorizeForScopes[scopes = new string[] {"chat.readwrite"}] of the action method
+    b. In the action method, even if you do NOT specify the scopes (an empty array), when obtaining an access token, you'd still see all the
+       scopes in the token, because these were the scopes which the user had granted the permissions to. So the point is, the scopes array with values in it is useless.
+ 4. In the Authentication blade, notice that both ID and Access tokens checkboxes are turned off, but even then we're able to obtain both!
+    a. This may be because of the fact of the code that's configured to sign the user in. Looks like the library does this for us.
+    b. However, in the 1-Org code which is only for authentication (openid), you'll have to set the ID token, otherwise you'll get an error.
+ 5. The point is if you're specifying scopes on Azure, you must also specify in your app 
+ */
+
+
+
+
+using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication;
@@ -52,7 +70,9 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
             return View();
         }
 
-        [AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        //[AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
+        //[AuthorizeForScopes(Scopes = new string[] { "user.read", "calendars.readwrite" })]
+        [AuthorizeForScopes(Scopes = new string[] { "calendars.readwrite", "chat.readwrite" })]
         public async Task<IActionResult> Profile()
         {
             User currentUser = null;
@@ -62,7 +82,9 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
                 var idToken = await HttpContext.GetTokenAsync("id_token");
                 var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-                string[] scopes = new string[] { "user.read" };
+                //string[] scopes = new string[] { "user.read" };
+                //string[] scopes = new string[] { "user.read", "calendars.readwrite" };
+                string[] scopes = new string[] { "chat.readwrite" };
                 var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
 
                 accessToken = await HttpContext.GetTokenAsync("access_token");
