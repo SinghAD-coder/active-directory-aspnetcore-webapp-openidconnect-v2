@@ -14,6 +14,7 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
         public HomeController(ITokenAcquisition tokenAcquisition)
         {
             this.tokenAcquisition = tokenAcquisition;
+            //var token = tokenAcquisition.GetAccessTokenForUserAsync(new string[] { });
         }
 
         public IActionResult Index()
