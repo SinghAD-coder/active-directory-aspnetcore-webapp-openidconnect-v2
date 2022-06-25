@@ -11,6 +11,10 @@ Interesting Notes:
     a. This may be because of the fact of the code that's configured to sign the user in. Looks like the library does this for us.
     b. However, in the 1-Org code which is only for authentication (openid), you'll have to set the ID token, otherwise you'll get an error.
  5. The point is if you're specifying scopes on Azure, you must also specify in your app 
+
+ 6. Once a given user has granted permissions during the consent process, nothing happens if those corresponding scopes are removed from the app!. 
+    a. During addition of new scopes, they're asked, but NOT during removal (then how's this achieved?)
+    b. You can go the Users blade in AAD, and then you Review Permissions, but in order to revoke, you'll have to run a PS script.
  */
 
 
@@ -72,7 +76,8 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
         //[AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         //[AuthorizeForScopes(Scopes = new string[] { "user.read", "calendars.readwrite" })]
-        [AuthorizeForScopes(Scopes = new string[] { "calendars.readwrite", "chat.readwrite" })]
+        //[AuthorizeForScopes(Scopes = new string[] { "calendars.readwrite", "chat.readwrite" })]
+        [AuthorizeForScopes(Scopes = new string[] { "contacts.readwrite" })]
         public async Task<IActionResult> Profile()
         {
             User currentUser = null;
