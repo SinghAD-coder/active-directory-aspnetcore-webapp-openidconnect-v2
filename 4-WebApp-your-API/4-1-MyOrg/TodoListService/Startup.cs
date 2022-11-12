@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Web;
+using TodoListService.Middleware;
 
 namespace TodoListService
 {
@@ -49,7 +50,7 @@ namespace TodoListService
             {
                 app.UseHsts();
             }
-
+            app.UseMiddleware<ApiKeyMiddleware>();
             app.UseHttpsRedirection();
             
             app.UseRouting();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -34,6 +35,12 @@ namespace WebApp_OpenIDConnect_DotNet
 
             // Sign-in users with the Microsoft identity platform
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration);
+
+            // I added this so that the token is available from the HttpContxt.GetTokenAsync();
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.SaveTokens = true;
+            });
 
             services.AddControllersWithViews(options =>
             {

@@ -37,6 +37,10 @@ namespace WebApp_OpenIDConnect_DotNet
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApp(options => Configuration.Bind("AzureAd", options));
 
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                     {
+                         options.SaveTokens = true;
+                     });
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()

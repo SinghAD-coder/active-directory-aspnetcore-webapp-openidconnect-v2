@@ -77,7 +77,10 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
         //[AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
         //[AuthorizeForScopes(Scopes = new string[] { "user.read", "calendars.readwrite" })]
         //[AuthorizeForScopes(Scopes = new string[] { "calendars.readwrite", "chat.readwrite" })]
-        [AuthorizeForScopes(Scopes = new string[] { "contacts.readwrite" })]
+
+        // If you specify a fully qualified scope here and also request for it you get an error: AADSTS65005
+        //[AuthorizeForScopes(Scopes = new string[] { "contacts.readwrite", "api://a6ef23c9-2e91-4819-a6af-4a44a44222fb/Custom.Contacts.Delete" })]
+        [AuthorizeForScopes(Scopes = new string[] { "api://de5f4fda-3e7b-4f79-97fa-f09fe1beb57d/iMprove.logs.read" })]
         public async Task<IActionResult> Profile()
         {
             User currentUser = null;
@@ -89,7 +92,24 @@ namespace WebApp_OpenIDConnect_DotNet_graph.Controllers
 
                 //string[] scopes = new string[] { "user.read" };
                 //string[] scopes = new string[] { "user.read", "calendars.readwrite" };
-                string[] scopes = new string[] { "chat.readwrite" };
+
+                /* 
+                 * 1. Any scope that I specify here should exist in "Expose an API" blade, if not, you'll see a login error in your app.
+                 * 2. If you just specify the scope name like user.read, it'll default to Microsoft Graph URI concatenated with user.read.
+                 * 3. For custom scopes, always include the fully qualified scope name.
+                 *      a. If your app is a web app, go to "Expose an API" blade
+                 *      b. Add a new scope name of your choice
+                 *      c. Copy the fully qualified scope name and paste it in the scopes array if you want it to be included in the access token
+                 * 
+                */
+
+
+                //string[] scopes = new string[] { "api://a6ef23c9-2e91-4819-a6af-4a44a44222fb/chat.read"};
+                string[] scopes = new string[] { 
+                    "api://de5f4fda-3e7b-4f79-97fa-f09fe1beb57d/iMprove.Authorization.ReadWrite", 
+                    "api://de5f4fda-3e7b-4f79-97fa-f09fe1beb57d/iMprove.logs.read" 
+                };
+
                 var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
 
                 accessToken = await HttpContext.GetTokenAsync("access_token");

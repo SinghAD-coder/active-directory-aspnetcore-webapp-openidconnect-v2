@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -18,6 +19,8 @@ namespace WebApp_OpenIDConnect_DotNet.Controllers
 
         public IActionResult Index()
         {
+            var idToken = HttpContext.GetTokenAsync("id_token");
+
             return View();
         }
 
