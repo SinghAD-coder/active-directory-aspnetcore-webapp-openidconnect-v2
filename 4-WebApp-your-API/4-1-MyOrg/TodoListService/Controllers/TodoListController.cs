@@ -12,6 +12,7 @@ using TodoListService.Models;
 namespace TodoListService.Controllers
 {
     [Authorize]
+    [ApiController]
     [Route("api/[controller]")]
     public class TodoListController : Controller
     {

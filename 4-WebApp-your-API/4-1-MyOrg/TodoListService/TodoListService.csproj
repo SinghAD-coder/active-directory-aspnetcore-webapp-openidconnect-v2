@@ -4,10 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-TodoListService-03230DB1-5145-408C-A48B-BE3DAFC56C30</UserSecretsId>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <PackageProjectUrl>swagger</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
 </Project>
